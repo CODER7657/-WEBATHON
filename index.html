@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ayush Bawaskar | Creative Developer</title>
+    <!-- Tailwind CSS for utility classes -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Three.js library for 3D graphics -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Google Fonts for the 'Inter' typeface -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts for the 'Orbitron' typeface -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a1a10; /* A slightly aged, desaturated background */
+            color: #d8c39e; /* Aged paper-like text color */
+            overflow: hidden; /* Prevents scrollbars from the canvas */
+        }
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        .content-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            /* Center content horizontally */
+            align-items: center;
+            text-align: left;
+            padding: 2rem;
+        }
+        .name-title {
+            padding: 2rem 3rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        .name-title:hover {
+            transform: translateY(-5px);
+        }
+        nav a {
+            transition: color 0.3s ease, letter-spacing 0.3s ease;
+            color: rgba(216, 195, 158, 0.7);
+        }
+        nav a:hover {
+            color: #d8c39e;
+            letter-spacing: 0.05em;
+        }
+        /* Custom styles for the name and title */
+        .name-title h1 {
+            font-family: 'Orbitron', sans-serif;
+            color: #b3d2f2; /* Light blue color for a futuristic feel */
+            text-shadow: 0 0 5px #b3d2f2, 0 0 10px #b3d2f2, 0 0 20px #b3d2f2; /* Glowing effect */
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .name-title h1:hover {
+            color: #ffffff;
+            text-shadow: 0 0 10px #b3d2f2, 0 0 20px #b3d2f2, 0 0 30px #b3d2f2;
+        }
+        
+        /* New classes for the content sections and active link */
+        .content-section {
+            display: none;
+            padding: 2rem;
+            background-color: rgba(26, 26, 16, 0.5);
+            backdrop-filter: blur(5px);
+            border-radius: 0.5rem;
+            margin-top: 2rem;
+            transition: opacity 0.5s ease-in-out;
+            opacity: 0;
+            /* Increased max-width for centered content */
+            max-width: 90%; 
+        }
+        
+        .content-section.active {
+            display: block;
+            opacity: 1;
+        }
+        
+        .active-link {
+            color: #d8c39e !important;
+            letter-spacing: 0.05em;
+        }
+
+        /* Specific styles for the featured project card */
+        .featured-project {
+            background-color: rgba(45, 45, 29, 0.7);
+            border: 1px solid #d8c39e;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            /* New glowing effect for the sun ray */
+            box-shadow: 0 0 20px rgba(255, 220, 150, 0.5);
+            animation: pulse-glow 3s infinite alternate;
+        }
+
+        @keyframes pulse-glow {
+            from {
+                box-shadow: 0 0 10px rgba(255, 220, 150, 0.3), 0 0 20px rgba(255, 220, 150, 0.3);
+            }
+            to {
+                box-shadow: 0 0 15px rgba(255, 220, 150, 0.6), 0 0 30px rgba(255, 220, 150, 0.6);
+            }
+        }
+
+        /* Initial state for cards before they animate in */
+        .project-card {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+        }
+
+        /* Active state for cards to show them after delay */
+        .project-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* New styles for horizontal scrolling and hiding scrollbars */
+        .project-cards-container {
+            display: flex;
+            overflow-x: auto;
+            gap: 1.5rem; /* Equivalent to Tailwind's space-x-6 */
+            padding-bottom: 1rem; /* Space for the scrollbar */
+            
+            /* Hide scrollbar for WebKit browsers */
+            -webkit-overflow-scrolling: touch;
+            -webkit-scrollbar: none;
+            /* Hide scrollbar for Firefox */
+            scrollbar-width: none;
+            /* Hide scrollbar for IE/Edge */
+            -ms-overflow-style: none;
+            /* Add smooth scrolling behavior */
+            scroll-behavior: smooth;
+        }
+        
+        /* Fallback for webkit browsers */
+        .project-cards-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .project-card {
+            min-width: 250px; /* Ensures cards have a consistent minimum width */
+            flex-shrink: 0; /* Prevents cards from shrinking */
+            /* Add hovering effect */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .project-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Animation for the about section */
+        #about-section .about-content {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        #about-section.active .about-content {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- Unique Animation for the Contact Section --- */
+        .contact-content .glitch-line {
+            opacity: 0;
+        }
+
+        #contact-section.active .contact-content .glitch-line {
+            animation: glitch-in 0.8s forwards;
+        }
+
+        #contact-section.active .contact-content .glitch-line:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        #contact-section.active .contact-content .glitch-line:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        #contact-section.active .contact-content .glitch-line:nth-child(4) {
+            animation-delay: 0.6s;
+        }
+
+        @keyframes glitch-in {
+            0% {
+                opacity: 0;
+                transform: translateX(-50px);
+                text-shadow: 0 0 1px #b3d2f2, 0 0 2px #b3d2f2;
+            }
+            30% {
+                opacity: 0.7;
+                transform: translateX(10px);
+            }
+            40% {
+                transform: translateX(-10px);
+                text-shadow: 0 0 5px #b3d2f2, 0 0 10px #b3d2f2;
+            }
+            60% {
+                opacity: 1;
+                transform: translateX(5px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+                text-shadow: none;
+            }
+        }
+
+        .social-link svg, .social-link button {
+            transition: transform 0.3s ease;
+        }
+        .social-link:hover svg, .social-link:hover button {
+            transform: scale(1.2) rotate(5deg);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- The canvas element for the Three.js background animation -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- The main content layer, which sits on top of the canvas -->
+    <div class="content-overlay">
+        <!-- Home Section - Visible by default -->
+        <section id="home-section" class="flex-grow flex flex-col justify-center items-start w-full">
+            <div id="home-link" class="name-title">
+                <h1 class="text-4xl md:text-6xl font-bold tracking-wider text-white">AYUSH<br>BAWASKAR</h1>
+                <p class="text-lg md:text-xl text-gray-300 mt-2 tracking-widest uppercase">
+                    Web Designer | Developer
+                </p>
+            </div>
+            <!-- The navigation is now part of the home section -->
+            <nav class="mt-8">
+                <ul id="nav-list" class="flex flex-col space-y-4 text-sm uppercase tracking-widest">
+                    <li><a href="#work-section" class="font-semibold">Work</a></li>
+                    <li><a href="#about-section" class="font-semibold">About</a></li>
+                    <li><a href="#contact-section" class="font-semibold">Contact</a></li>
+                </ul>
+            </nav>
+        </section>
+
+        <!-- All other sections are grouped in a container, hidden by default -->
+        <section id="other-sections" class="flex-grow flex flex-col justify-center items-center w-full" style="display: none;">
+            <div id="content-container" class="mt-8">
+                <!-- Work Section -->
+                <section id="work-section" class="content-section">
+                    <h2 class="text-2xl font-bold mb-4">My Work</h2>
+                    
+                    <!-- Featured Project Section -->
+                    <div class="featured-project p-6 rounded-lg shadow-lg backdrop-blur-sm">
+                        <h3 class="text-2xl font-bold text-white mb-2">My Best Project</h3>
+                        <p class="text-gray-300 text-base mb-4">This is a detailed description of your featured project. Here you can highlight its goals, your role, the technologies used, and the impact it had. This is your chance to tell a story about your work and skills.</p>
+                        <a href="#" class="inline-block px-6 py-2 text-md font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition duration-300">View Case Study</a>
+                    </div>
+
+                    <!-- Other Projects Grid -->
+                    <div id="projects-container" class="project-cards-container">
+                        <!-- Project Card 1 -->
+                        <div class="project-card p-6 rounded-lg shadow-lg backdrop-blur-sm bg-gray-800 bg-opacity-50 border border-gray-700">
+                            <h3 class="text-xl font-semibold text-white mb-2">Project 1</h3>
+                            <p class="text-gray-300 text-sm mb-4">A brief description of your project. Mention the technologies used and its key features.</p>
+                            <a href="#" class="inline-block px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition duration-300">View Project</a>
+                        </div>
+                        <!-- Project Card 2 -->
+                        <div class="project-card p-6 rounded-lg shadow-lg backdrop-blur-sm bg-gray-800 bg-opacity-50 border border-gray-700">
+                            <h3 class="text-xl font-semibold text-white mb-2">Project 2</h3>
+                            <p class="text-gray-300 text-sm mb-4">A brief description of your project. Mention the technologies used and its key features.</p>
+                            <a href="#" class="inline-block px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition duration-300">View Project</a>
+                        </div>
+                        <!-- Project Card 3 -->
+                        <div class="project-card p-6 rounded-lg shadow-lg backdrop-blur-sm bg-gray-800 bg-opacity-50 border border-gray-700">
+                            <h3 class="text-xl font-semibold text-white mb-2">Project 3</h3>
+                            <p class="text-gray-300 text-sm mb-4">A brief description of your project. Mention the technologies used and its key features.</p>
+                            <a href="#" class="inline-block px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition duration-300">View Project</a>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- About Section -->
+                <section id="about-section" class="content-section">
+                    <div class="about-content">
+                        <h2 class="text-2xl font-bold mb-4">About Me</h2>
+                        <p class="text-gray-300 mb-4">
+                            I am an undergraduate B.Tech CSE student at New LJ Institute of Engineering and Technology, specializing in AI/ML and blockchain development. My passion lies in exploring the intersection of artificial intelligence and decentralized technologies.
+                        </p>
+                        <p class="text-gray-300">
+                            I have hands-on experience building the frontend of decentralized applications (DApps) using React.js and connecting them to smart contracts with ethers.js. I am always open to learning, collaboration, and new project opportunities in the tech space.
+                        </p>
+                    </div>
+                </section>
+
+                <!-- Contact Section -->
+                <section id="contact-section" class="content-section">
+                    <div class="contact-content text-center">
+                        <h2 class="text-2xl font-bold mb-4 glitch-line">Get in Touch</h2>
+                        <p class="text-gray-300 mb-6 glitch-line">
+                            Feel free to reach out. I'm always open to discussing new projects, creative ideas, or opportunities to be part of an amazing team.
+                        </p>
+                        <div class="flex justify-center items-center space-x-6 glitch-line">
+                            <a href="https://www.linkedin.com/in/ayush-bawaskar-254322340/" target="_blank" rel="noopener noreferrer" class="social-link text-gray-400 hover:text-white">
+                                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                            </a>
+                            <a href="https://github.com/Ayush3422" target="_blank" rel="noopener noreferrer" class="social-link text-gray-400 hover:text-white">
+                                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.168 6.839 9.49.5.092.682-.217.682-.482 0-.237-.009-.868-.014-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.031-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.03 1.595 1.03 2.688 0 3.848-2.338 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.001 10.001 0 0022 12c0-5.523-4.477-10-10-10z" clip-rule="evenodd"/></svg>
+                            </a>
+                            <button id="show-email-btn" class="social-link text-gray-400 hover:text-white">
+                                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 6C22 4.9 21.1 4 20 4H4C2.9 4 2 4.9 2 6V18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6ZM20 6L12 11L4 6H20ZM20 18H4V8L12 13L20 8V18Z"/></svg>
+                            </button>
+                        </div>
+                        <p id="email-info" class="mt-6 glitch-line text-blue-400" style="display: none; opacity: 0; transition: opacity 0.5s;">
+                            ayushbawaskar4@gmail.com
+                        </p>
+                    </div>
+                </section>
+            </div>
+        </section>
+    </div>
+    
+    <div id="copy-message" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background-color: #2d2d1d; color: #b3d2f2; padding: 10px 20px; border-radius: 5px; z-index: 1000; opacity: 0; transition: opacity 0.5s; border: 1px solid #b3d2f2;">
+        Email copied to clipboard!
+    </div>
+
+    <script>
+        window.onload = function() {
+            let scene, camera, renderer, stars, moon, meteorGroup, detailedSatellites, cosmicRays;
+            let targetPosition = new THREE.Vector3();
+            let targetLookAt = new THREE.Vector3();
+            let isAnimating = false;
+            let targetSection = null;
+            
+            // Variables for the time-travel (warp) effect
+            let isWarping = false;
+            let originalFov;
+
+            const moonPosition = new THREE.Vector3(200, 0, 0);
+            const sunPosition = new THREE.Vector3(500, 200, 500);
+
+            // Camera positions and look-at targets for each section
+            const cameraViews = {
+                'home-section': {
+                    position: new THREE.Vector3(-100, 0, 600),
+                    lookAt: moonPosition.clone()
+                },
+                'work-section': {
+                    position: new THREE.Vector3(200, 10, -360),
+                    lookAt: new THREE.Vector3(200, 0, -500)
+                },
+                'about-section': {
+                    position: new THREE.Vector3(100, -150, 200),
+                    lookAt: new THREE.Vector3(100, -50, 0)
+                },
+                'contact-section': {
+                    position: new THREE.Vector3(300, 50, 300),
+                    lookAt: new THREE.Vector3(250, 0, 0)
+                }
+            };
+
+            function init() {
+                // Scene setup
+                scene = new THREE.Scene();
+                
+                // Camera setup
+                camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
+                originalFov = camera.fov; // Store the original FOV
+                camera.position.copy(cameraViews['home-section'].position);
+                camera.lookAt(cameraViews['home-section'].lookAt);
+
+                // Renderer setup
+                const canvas = document.getElementById('bg-canvas');
+                renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+
+                // --- Starfield Creation ---
+                const starVertices = [];
+                for (let i = 0; i < 10000; i++) {
+                    const x = (Math.random() - 0.5) * 2000;
+                    const y = (Math.random() - 0.5) * 2000;
+                    const z = (Math.random() - 0.5) * 2000;
+                    starVertices.push(x, y, z);
+                }
+                const starGeo = new THREE.BufferGeometry();
+                starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
+                let sprite = new THREE.TextureLoader().load('https://placehold.co/10x10/ffffff/ffffff.png?text=+');
+                let starMaterial = new THREE.PointsMaterial({
+                    color: 0x8a7f72,
+                    size: 0.7,
+                    map: sprite
+                });
+                stars = new THREE.Points(starGeo, starMaterial);
+                scene.add(stars);
+
+                // --- Moon Creation ---
+                const textureLoader = new THREE.TextureLoader();
+                const moonTexture = textureLoader.load('https://s3-us-west-2.amazonaws.com/s.cdpn.io/17271/lroc_color_poles_1k.jpg');
+                const normalTexture = textureLoader.load('https://s3-us-west-2.amazonaws.com/s.cdpn.io/17271/ldem_3_8bit.jpg');
+                
+                const moonGeometry = new THREE.SphereGeometry(350, 64, 64);
+                const moonMaterial = new THREE.MeshStandardMaterial({
+                    map: moonTexture,
+                    normalMap: normalTexture,
+                    color: 0x968772
+                });
+                moon = new THREE.Mesh(moonGeometry, moonMaterial);
+                moon.position.copy(moonPosition);
+                scene.add(moon);
+
+                // --- Meteorites Creation ---
+                meteorGroup = new THREE.Group();
+                const meteorCount = 100;
+                const meteorDistance = 360; 
+                const meteorGeometry = new THREE.IcosahedronGeometry(0.05, 0);
+                const meteorMaterial = new THREE.MeshStandardMaterial({ color: 0x998d78, metalness: 0.8, roughness: 0.5 });
+
+                for (let i = 0; i < meteorCount; i++) {
+                    const meteor = new THREE.Mesh(meteorGeometry, meteorMaterial);
+                    const phi = Math.random() * Math.PI * 2;
+                    const theta = Math.random() * Math.PI;
+                    meteor.position.x = meteorDistance * Math.sin(theta) * Math.cos(phi);
+                    meteor.position.y = meteorDistance * Math.sin(theta) * Math.sin(phi);
+                    meteor.position.z = meteorDistance * Math.cos(theta);
+                    meteor.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
+                    meteorGroup.add(meteor);
+                }
+                meteorGroup.position.copy(moon.position);
+                scene.add(meteorGroup);
+                
+                // --- Sun and Lighting ---
+                const directionalLight = new THREE.DirectionalLight(0xbfa576, 1.5);
+                directionalLight.position.copy(sunPosition);
+                scene.add(directionalLight);
+                
+                const pointLight = new THREE.PointLight(0xc4b7a1, 1, 0, 2);
+                pointLight.position.copy(sunPosition);
+                scene.add(pointLight);
+
+                const sunGeometry = new THREE.SphereGeometry(20, 32, 32);
+                const sunMaterial = new THREE.MeshBasicMaterial({ color: 0xc4b7a1, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending });
+                const sun = new THREE.Mesh(sunGeometry, sunMaterial);
+                sun.position.copy(sunPosition);
+                scene.add(sun);
+                
+                const ambientLight = new THREE.AmbientLight(0xc4b7a1, 0.2);
+                scene.add(ambientLight);
+
+                // --- Cosmic Ray Effect ---
+                const cosmicRayVertices = [];
+                const rayCount = 100;
+                const raySpread = 1000;
+
+                for (let i = 0; i < rayCount; i++) {
+                    const x = sunPosition.x + (Math.random() - 0.5) * raySpread;
+                    const y = sunPosition.y + (Math.random() - 0.5) * raySpread;
+                    const z = sunPosition.z + (Math.random() - 0.5) * raySpread;
+                    cosmicRayVertices.push(x, y, z);
+                }
+                const cosmicRayGeo = new THREE.BufferGeometry();
+                cosmicRayGeo.setAttribute('position', new THREE.Float32BufferAttribute(cosmicRayVertices, 3));
+                
+                const cosmicRayMaterial = new THREE.PointsMaterial({
+                    color: 0xc4b7a1,
+                    size: 1.5,
+                    transparent: true,
+                    opacity: 0.5,
+                    blending: THREE.AdditiveBlending
+                });
+                
+                cosmicRays = new THREE.Points(cosmicRayGeo, cosmicRayMaterial);
+                scene.add(cosmicRays);
+
+                // --- Detailed Satellites Creation ---
+                detailedSatellites = [];
+                const detailedSatelliteCount = 4;
+
+                for (let i = 0; i < detailedSatelliteCount; i++) {
+                    const satelliteGroup = new THREE.Group();
+                    const mainBody = new THREE.Mesh(new THREE.IcosahedronGeometry(8, 0), new THREE.MeshStandardMaterial({ color: 0xffa500, metalness: 0.9, roughness: 0.5 }));
+                    satelliteGroup.add(mainBody);
+                    const panelGeom = new THREE.BoxGeometry(25, 1, 25);
+                    const panelMat = new THREE.MeshStandardMaterial({ color: 0x334466, metalness: 0.8, roughness: 0.2 });
+                    const leftPanel = new THREE.Mesh(panelGeom, panelMat);
+                    leftPanel.position.set(-20, 0, 0);
+                    satelliteGroup.add(leftPanel);
+                    const rightPanel = new THREE.Mesh(panelGeom, panelMat);
+                    rightPanel.position.set(20, 0, 0);
+                    satelliteGroup.add(rightPanel);
+                    satelliteGroup.orbitSpeed = (Math.random() * 0.0005) + 0.0002;
+                    satelliteGroup.orbitAngle = Math.random() * Math.PI * 2;
+                    satelliteGroup.panelRotationSpeed = (Math.random() * 0.02) + 0.01;
+                    detailedSatellites.push(satelliteGroup);
+                    scene.add(satelliteGroup);
+                }
+                
+                window.addEventListener("resize", onWindowResize, false);
+                animate();
+            }
+
+            // Animation loop
+            function animate() {
+                // Animate background elements
+                stars.rotation.y += 0.0001;
+                moon.rotation.y += 0.001;
+                moon.rotation.x += 0.0005;
+                if (meteorGroup) meteorGroup.rotation.y += 0.005;
+
+                // Animate satellites
+                if (detailedSatellites) {
+                    detailedSatellites.forEach(satellite => {
+                        satellite.orbitAngle += satellite.orbitSpeed;
+                        satellite.position.x = moon.position.x + 400 * Math.cos(satellite.orbitAngle);
+                        satellite.position.z = moon.position.z + 400 * Math.sin(satellite.orbitAngle);
+                        satellite.children[1].rotation.y += satellite.panelRotationSpeed;
+                        satellite.children[2].rotation.y += satellite.panelRotationSpeed;
+                    });
+                }
+
+                // Animate cosmic rays
+                if (cosmicRays) {
+                    const positions = cosmicRays.geometry.attributes.position.array;
+                    for (let i = 0; i < positions.length; i += 3) {
+                        positions[i] -= (positions[i] - 0) * 0.005;
+                        positions[i+1] -= (positions[i+1] - 0) * 0.005;
+                        positions[i+2] -= (positions[i+2] - 0) * 0.005;
+
+                        if (new THREE.Vector3(positions[i], positions[i+1], positions[i+2]).length() < 200) {
+                            positions[i] = sunPosition.x + (Math.random() - 0.5) * 1000;
+                            positions[i+1] = sunPosition.y + (Math.random() - 0.5) * 1000;
+                            positions[i+2] = sunPosition.z + (Math.random() - 0.5) * 1000;
+                        }
+                    }
+                    cosmicRays.geometry.attributes.position.needsUpdate = true;
+                }
+                
+                // --- Camera Animation and Warp Effect Logic ---
+                if (!isAnimating && camera.fov > originalFov) {
+                    // Smoothly return FOV to normal when not animating
+                    camera.fov = THREE.MathUtils.lerp(camera.fov, originalFov, 0.1);
+                    if (Math.abs(camera.fov - originalFov) < 0.1) {
+                        camera.fov = originalFov;
+                    }
+                    camera.updateProjectionMatrix();
+                }
+
+                if (isAnimating) {
+                    camera.position.lerp(targetPosition, 0.05);
+                    let currentLookAt = new THREE.Vector3(0,0, -1).applyQuaternion(camera.quaternion).add(camera.position);
+                    currentLookAt.lerp(targetLookAt, 0.05);
+                    camera.lookAt(currentLookAt);
+
+                    // If warping to the 'About' section, increase FOV
+                    if (isWarping) {
+                        camera.fov = THREE.MathUtils.lerp(camera.fov, 140, 0.05);
+                        camera.updateProjectionMatrix();
+                    }
+                    
+                    if (camera.position.distanceTo(targetPosition) < 0.1) {
+                        isAnimating = false;
+                        isWarping = false; // End warp effect
+                        camera.lookAt(targetLookAt);
+                        
+                        // Show the correct content section
+                        const homeSection = document.getElementById('home-section');
+                        const otherSections = document.getElementById('other-sections');
+                        
+                        if (targetSection === 'home-section') {
+                            otherSections.style.display = 'none';
+                            homeSection.style.display = 'flex';
+                        } else {
+                            otherSections.style.display = 'flex';
+                            homeSection.style.display = 'none';
+                            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+                            document.getElementById(targetSection.replace('#', '')).classList.add('active');
+                            
+                            if (targetSection === '#work-section') {
+                                document.querySelectorAll('.project-card').forEach((card, index) => {
+                                    setTimeout(() => card.classList.add('visible'), index * 150);
+                                });
+                            }
+                        }
+                    }
+                }
+
+                renderer.render(scene, camera);
+                requestAnimationFrame(animate);
+            }
+
+            function onWindowResize() {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+
+            init();
+
+            // --- Navigation Logic ---
+            const animateCamera = (targetViewId) => {
+                targetSection = targetViewId;
+                // Activate warp effect only for the 'About' section
+                isWarping = (targetViewId === '#about-section');
+                targetPosition.copy(cameraViews[targetViewId.replace('#', '')].position);
+                targetLookAt.copy(cameraViews[targetViewId.replace('#', '')].lookAt);
+                isAnimating = true;
+            };
+
+            document.querySelectorAll('#nav-list a').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    animateCamera(link.getAttribute('href'));
+                });
+            });
+
+            document.getElementById('home-link').addEventListener('click', () => {
+                animateCamera('home-section');
+            });
+            
+            // --- Keyboard Navigation for Project Cards ---
+            document.addEventListener('keydown', (event) => {
+                const workSection = document.getElementById('work-section');
+                if (workSection && workSection.classList.contains('active')) {
+                    const container = document.getElementById('projects-container');
+                    const firstCard = container.querySelector('.project-card');
+                    if (!firstCard) return;
+
+                    const scrollAmount = firstCard.offsetWidth + 24; // card width + gap
+
+                    if (event.key === 'ArrowRight') {
+                        container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                    } else if (event.key === 'ArrowLeft') {
+                        container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+                    }
+                }
+            });
+
+            // --- Show Email Logic ---
+            const showEmailBtn = document.getElementById('show-email-btn');
+            const emailInfo = document.getElementById('email-info');
+            const copyMessage = document.getElementById('copy-message');
+
+            showEmailBtn.addEventListener('click', () => {
+                // Reveal the email address
+                emailInfo.style.display = 'block';
+                setTimeout(() => {
+                    emailInfo.style.opacity = '1';
+                }, 10);
+
+                // Hide the button
+                showEmailBtn.style.display = 'none';
+
+                // Copy to clipboard
+                const emailText = emailInfo.innerText.trim();
+                const textArea = document.createElement('textarea');
+                textArea.value = emailText;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    // Show confirmation message
+                    copyMessage.style.opacity = '1';
+                    setTimeout(() => {
+                        copyMessage.style.opacity = '0';
+                    }, 2000);
+                } catch (err) {
+                    console.error('Failed to copy text: ', err);
+                }
+                document.body.removeChild(textArea);
+            });
+        };
+    </script>
+
+</body>
+</html>
