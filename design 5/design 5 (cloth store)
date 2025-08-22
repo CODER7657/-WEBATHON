@@ -1,786 +1,570 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cloth Shop</title>
-    <!-- Use Tailwind CSS for a modern, responsive design -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        .container {
-            max-width: 1280px;
-            margin: 0 auto;
-        }
-        /* Custom animation for the auth page */
-        @keyframes bounce-in {
-            0% { transform: scale(0.8); opacity: 0; }
-            50% { transform: scale(1.05); opacity: 1; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        .animate-bounce-in {
-            animation: bounce-in 0.5s ease-out forwards;
-        }
-        .main-content {
-            min-height: calc(100vh - 88px); /* Account for header height */
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StyleHub - Premium Fashion Store</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Poppins', sans-serif; }
+
+    /* Custom Animations */
+    @keyframes slideInFromTop { 0% { transform: translateY(-100px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+    @keyframes slideInFromBottom { 0% { transform: translateY(100px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+    @keyframes fadeInScale { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+    @keyframes bounce-in { 0% { transform: scale(0.3); opacity: 0; } 50% { transform: scale(1.05); } 70% { transform: scale(0.9); } 100% { transform: scale(1); opacity: 1; } }
+    @keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); } 50% { box-shadow: 0 0 40px rgba(99, 102, 241, 0.6); } }
+    @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+    @keyframes shimmer { 0% { background-position: -1000px 0; } 100% { background-position: 1000px 0; } }
+
+    .animate-slide-in-top { animation: slideInFromTop 0.8s ease-out; }
+    .animate-slide-in-bottom { animation: slideInFromBottom 0.8s ease-out; }
+    .animate-fade-in-scale { animation: fadeInScale 0.6s ease-out; }
+    .animate-bounce-in { animation: bounce-in 0.8s ease-out; }
+    .animate-pulse-glow { animation: pulse-glow 2s infinite; }
+    .animate-float { animation: float 3s ease-in-out infinite; }
+
+    /* Glass Effect */
+    .glass-card { background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 25px 45px rgba(0, 0, 0, 0.1); }
+    .glass-card-dark { background: rgba(0, 0, 0, 0.1); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+
+    /* Gradients */
+    .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .gradient-bg-2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+    .gradient-bg-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+    .gradient-text { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+    /* Product Card */
+    .product-card { transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); transform-style: preserve-3d; }
+    .product-card:hover { transform: translateY(-15px) rotateX(5deg); box-shadow: 0 25px 60px rgba(0,0,0,0.2); }
+    .product-card:hover .product-image { transform: scale(1.1); }
+    .product-image { transition: transform 0.4s ease; }
+
+    /* Buttons */
+    .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); transition: all 0.3s ease; position: relative; overflow: hidden; }
+    .btn-primary::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); transition: left 0.5s; }
+    .btn-primary:hover::before { left: 100%; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(102,126,234,0.4); }
+
+    /* Loading / Scrollbar */
+    .shimmer-effect { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 1000px 100%; animation: shimmer 2s infinite; }
+    ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-track { background: #f1f1f1; } ::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 4px; }
+
+    /* Backdrop */
+    .modal-backdrop { background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px); }
+    .notification { background: rgba(16, 185, 129, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); }
+
+    .hero-pattern { background-image: radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255, 107, 107, 0.3) 0%, transparent 50%), radial-gradient(circle at 40% 40%, rgba(120, 219, 226, 0.3) 0%, transparent 50%); }
+  </style>
 </head>
-<body class="bg-slate-50 font-sans antialiased">
-    <!-- Main container where all dynamic content will be rendered -->
-    <div id="app-container"></div>
+<body class="bg-gray-50 min-h-screen">
+  <div id="app-container"></div>
 
-    <script>
-        // === GLOBAL STATE & DATA ===
-        let isLoggedIn = false;
-        let currentPage = 'home';
-        let activeCategory = null;
-        let selectedSubCategory = null;
-        let cartItems = [];
-        let registeredUsers = {};
+  <script>
+    // === GLOBAL STATE ===
+    let isLoggedIn = false;
+    let currentPage = 'home'; // 'home' | 'checkout' | 'orders'
+    let activeCategory = null; // 'Men' | 'Women' | 'Children'
+    let selectedSubCategory = null;
+    let cartItems = []; // {id, qty}
+    let registeredUsers = {}; // {email: password}
+    let currentUser = null; // email
+    let searchQuery = '';
 
-        // Dummy product data
-        const products = [
-            { id: 1, name: 'Casual White Shirt', price: 49.99, category: 'Men', subCategory: 'Shirts', image: 'https://images.unsplash.com/photo-1596752002341-36f452d3d927?q=80&w=1920&auto=format&fit=crop' },
-            { id: 2, name: 'Stylish Denim Jacket', price: 89.99, category: 'Women', subCategory: 'Tops', image: 'https://images.unsplash.com/photo-1542272301-ad26090c29f6?q=80&w=1920&auto=format&fit=crop' },
-            { id: 3, name: 'Classic Black Trousers', price: 59.99, category: 'Men', subCategory: 'Trousers', image: 'https://images.unsplash.com/photo-1621243126786-21b330365775?q=80&w=1920&auto=format&fit=crop' },
-            { id: 4, name: 'Elegant Maxi Dress', price: 129.99, category: 'Women', subCategory: 'Dresses', image: 'https://images.unsplash.com/photo-1582298687729-1a738410294d?q=80&w=1920&auto=format&fit=crop' },
-            { id: 5, name: 'Kids Graphic Tee', price: 24.99, category: 'Children', subCategory: 'T-Shirts', image: 'https://images.unsplash.com/photo-1585487002016-1f92e4242630?q=80&w=1920&auto=format&fit=crop' },
-            { id: 6, name: 'Leather Boots', price: 99.99, category: 'Men', subCategory: 'Accessories', image: 'https://images.unsplash.com/photo-1627384169724-4f01476a88e9?q=80&w=1920&auto=format&fit=crop' },
-            { id: 7, name: 'Men\'s Ethnic Kurta', price: 79.99, category: 'Men', subCategory: 'Ethnic Wear', image: 'https://images.unsplash.com/photo-1625447101889-42b781f5c6e8?q=80&w=1920&auto=format&fit=crop' },
-            { id: 8, name: 'Women\'s Ethnic Saree', price: 159.99, category: 'Women', subCategory: 'Ethnic Wear', image: 'https://images.unsplash.com/photo-1621243126786-21b330365775?q=80&w=1920&auto=format&fit=crop' },
-            { id: 9, name: 'Dark Blue Slim Fit Jeans', price: 69.99, category: 'Men', subCategory: 'Jeans', image: 'https://i.imgur.com/K99aK6L.jpg' },
-            { id: 10, name: 'Mid Blue Slim Fit Jeans', price: 74.99, category: 'Men', subCategory: 'Jeans', image: 'https://i.imgur.com/g8o4T7Y.jpg' },
-            { id: 11, name: 'Dark Blue Ankle Fit Jeans', price: 69.99, category: 'Men', subCategory: 'Jeans', image: 'https://i.imgur.com/kS5x87t.jpg' },
-            { id: 12, name: 'Off-White Printed T-Shirt', price: 34.99, category: 'Men', subCategory: 'T-Shirts', image: 'https://i.imgur.com/yv6G92W.jpg' },
-            { id: 13, name: 'Navy Polo Shirt', price: 45.00, category: 'Men', subCategory: 'Shirts', image: 'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?q=80&w=1920&auto=format&fit=crop' },
-            { id: 14, name: 'Light Wash Skinny Jeans', price: 72.00, category: 'Men', subCategory: 'Jeans', image: 'https://images.unsplash.com/photo-1604176354204-9268737828e4?q=80&w=1920&auto=format&fit=crop' },
-            { id: 15, name: 'Graphic Band T-Shirt', price: 29.99, category: 'Men', subCategory: 'T-Shirts', image: 'https://images.unsplash.com/photo-1618677271927-4638a164f19b?q=80&w=1920&auto=format&fit=crop' },
-            { id: 16, name: 'Women\'s Summer Skirt', price: 55.00, category: 'Women', subCategory: 'Skirts', image: 'https://images.unsplash.com/photo-1594966606019-21696b998a6f?q=80&w=1920&auto=format&fit=crop' },
-        ];
+    // === DATA ===
+    const products = [
+      // Men's Products
+      { id: 1, name: 'Premium Cotton Shirt', price: 59.99, category: 'Men', subCategory: 'Shirts', image: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=800&h=800&fit=crop', rating: 4.8 },
+      { id: 2, name: 'Slim Fit Dress Shirt', price: 69.99, category: 'Men', subCategory: 'Shirts', image: 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=800&h=800&fit=crop', rating: 4.7 },
+      { id: 3, name: 'Classic Black Trousers', price: 79.99, category: 'Men', subCategory: 'Trousers', image: 'https://images.unsplash.com/photo-1624378515195-6bbdb73dff1a?w=800&h=800&fit=crop', rating: 4.9 },
+      { id: 4, name: 'Dark Blue Jeans', price: 89.99, category: 'Men', subCategory: 'Jeans', image: 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=800&h=800&fit=crop', rating: 4.6 },
+      { id: 5, name: 'Light Blue Jeans', price: 85.99, category: 'Men', subCategory: 'Jeans', image: 'https://images.unsplash.com/photo-1581338834647-b0fb40704e21?w=800&h=800&fit=crop', rating: 4.5 },
+      { id: 6, name: 'Graphic T-Shirt', price: 29.99, category: 'Men', subCategory: 'T-Shirts', image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&h=800&fit=crop', rating: 4.3 },
+      { id: 7, name: 'Plain White Tee', price: 24.99, category: 'Men', subCategory: 'T-Shirts', image: 'https://images.unsplash.com/photo-1581803118522-7b72a50f7e9f?w=800&h=800&fit=crop', rating: 4.4 },
+      { id: 8, name: 'Designer Kurta', price: 99.99, category: 'Men', subCategory: 'Ethnic Wear', image: 'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&h=800&fit=crop', rating: 4.8 },
+      { id: 9, name: 'Leather Jacket', price: 199.99, category: 'Men', subCategory: 'Jackets', image: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=800&h=800&fit=crop', rating: 4.9 },
+      { id: 10, name: 'Luxury Watch', price: 299.99, category: 'Men', subCategory: 'Accessories', image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&h=800&fit=crop', rating: 5.0 },
 
-        // Categories data
-        const categories = {
-            'Men': ['Shirts', 'Trousers', 'Ethnic Wear', 'Jeans', 'T-Shirts', 'Jackets', 'Accessories'],
-            'Women': ['Dresses', 'Tops', 'Skirts', 'Ethnic Wear', 'Accessories'],
-            'Children': ['T-Shirts', 'Jeans', 'Dresses', 'Playwear']
-        };
-        
-        // Helper function to create HTML for a product card
-        function createProductCard(product) {
-            return `
-                <div class="bg-white rounded-xl shadow-lg overflow-hidden transition-transform duration-300 hover:scale-105 hover:shadow-2xl">
-                    <div class="relative overflow-hidden rounded-t-xl">
-                        <img src="${product.image}" alt="${product.name}" class="w-full h-80 object-cover" />
-                        <div class="absolute inset-0 bg-black bg-opacity-0 transition-opacity duration-300 hover:bg-opacity-10"></div>
-                    </div>
-                    <div class="p-5 text-center">
-                        <h3 class="text-lg font-semibold text-slate-800 mb-1">${product.name}</h3>
-                        <p class="text-gray-600 mb-4">$${product.price.toFixed(2)}</p>
-                        <button 
-                            data-product-id="${product.id}"
-                            class="add-to-cart-btn w-full py-2 px-4 bg-slate-800 text-white font-medium rounded-lg hover:bg-slate-700 focus:outline-none focus:ring-4 focus:ring-slate-500 transition-colors duration-300"
-                        >
-                            Add to Cart
-                        </button>
-                    </div>
+      // Women's Products
+      { id: 11, name: 'Elegant Maxi Dress', price: 129.99, category: 'Women', subCategory: 'Dresses', image: 'https://images.unsplash.com/photo-1566479179817-c0ed5b0e9906?w=800&h=800&fit=crop', rating: 4.7 },
+      { id: 12, name: 'Floral Summer Dress', price: 89.99, category: 'Women', subCategory: 'Dresses', image: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800&h=800&fit=crop', rating: 4.6 },
+      { id: 13, name: 'Silk Blouse', price: 79.99, category: 'Women', subCategory: 'Tops', image: 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=800&h=800&fit=crop', rating: 4.8 },
+      { id: 14, name: 'Casual Denim Top', price: 55.99, category: 'Women', subCategory: 'Tops', image: 'https://images.unsplash.com/photo-1564584217132-2271feaeb3c5?w=800&h=800&fit=crop', rating: 4.4 },
+      { id: 15, name: 'Pleated Midi Skirt', price: 69.99, category: 'Women', subCategory: 'Skirts', image: 'https://images.unsplash.com/photo-1583496661160-fb5886a13d24?w=800&h=800&fit=crop', rating: 4.5 },
+      { id: 16, name: 'Designer Saree', price: 199.99, category: 'Women', subCategory: 'Ethnic Wear', image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=800&h=800&fit=crop', rating: 4.9 },
+      { id: 17, name: 'Handbag Collection', price: 149.99, category: 'Women', subCategory: 'Accessories', image: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=800&h=800&fit=crop', rating: 4.6 },
+
+      // Children's Products
+      { id: 18, name: 'Kids Cartoon T-Shirt', price: 19.99, category: 'Children', subCategory: 'T-Shirts', image: 'https://images.unsplash.com/photo-1503919545889-aef636e10ad4?w=800&h=800&fit=crop', rating: 4.7 },
+      { id: 19, name: "Girl's Pink Dress", price: 39.99, category: 'Children', subCategory: 'Dresses', image: 'https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?w=800&h=800&fit=crop', rating: 4.8 },
+      { id: 20, name: 'Kids Denim Jeans', price: 34.99, category: 'Children', subCategory: 'Jeans', image: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=800&h=800&fit=crop', rating: 4.5 },
+      { id: 21, name: 'Colorful Playwear', price: 29.99, category: 'Children', subCategory: 'Playwear', image: 'https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=800&h=800&fit=crop', rating: 4.6 },
+    ];
+
+    const categories = {
+      'Men': ['Shirts', 'Trousers', 'Ethnic Wear', 'Jeans', 'T-Shirts', 'Jackets', 'Accessories'],
+      'Women': ['Dresses', 'Tops', 'Skirts', 'Ethnic Wear', 'Accessories'],
+      'Children': ['T-Shirts', 'Jeans', 'Dresses', 'Playwear']
+    };
+
+    // === UTIL ===
+    const formatCurrency = (n) => `₹${(n * 83).toFixed(0)}`; // rough INR display
+    const getProduct = (id) => products.find(p => p.id === id);
+    const cartCount = () => cartItems.reduce((a,c)=>a+c.qty,0);
+    const cartSubtotal = () => cartItems.reduce((a,c)=> a + getProduct(c.id).price * c.qty, 0);
+
+    function createStarRating(rating) {
+      const full = Math.floor(rating); const half = rating % 1 !== 0; let html = '';
+      for (let i=0;i<full;i++) html += '<svg class="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>';
+      if (half) html += '<svg class="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20"><defs><linearGradient id="half"><stop offset="50%" stop-color="currentColor"/><stop offset="50%" stop-color="transparent"/></linearGradient></defs><path fill="url(#half)" d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>';
+      const empty = 5 - Math.ceil(rating);
+      for (let i=0;i<empty;i++) html += '<svg class="w-4 h-4 text-gray-300 fill-current" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>';
+      return html;
+    }
+
+    // === PERSISTENCE ===
+    const STORAGE_KEY = 'stylehub_state_v1';
+    function saveState() {
+      const state = { isLoggedIn, currentPage, activeCategory, selectedSubCategory, cartItems, registeredUsers, currentUser };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const s = JSON.parse(raw);
+        isLoggedIn = !!s.isLoggedIn; currentPage = s.currentPage || 'home';
+        activeCategory = s.activeCategory; selectedSubCategory = s.selectedSubCategory;
+        cartItems = Array.isArray(s.cartItems) ? s.cartItems : [];
+        registeredUsers = s.registeredUsers || {}; currentUser = s.currentUser || null;
+      } catch (e) { console.error('State load failed', e); }
+    }
+
+    // === UI HELPERS ===
+    function showNotification(text, type='success') {
+      const wrap = document.createElement('div');
+      wrap.className = 'fixed top-6 left-1/2 -translate-x-1/2 z-50';
+      wrap.innerHTML = `
+        <div class="notification ${type==='error' ? '!bg-red-500/95' : ''} text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 animate-slide-in-top">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          <span class="font-medium">${text}</span>
+        </div>`;
+      document.body.appendChild(wrap);
+      setTimeout(()=>{ wrap.remove(); }, 2200);
+    }
+
+    function productCard(product) {
+      return `
+      <div class="product-card bg-white rounded-3xl shadow-xl overflow-hidden group animate-fade-in-scale">
+        <div class="relative overflow-hidden rounded-t-3xl">
+          <img src="${product.image}" alt="${product.name}" class="product-image w-full h-72 object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy" />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 text-sm font-semibold text-gray-800 opacity-0 group-hover:opacity-100 transition-opacity">${product.category}</div>
+        </div>
+        <div class="p-5 text-center">
+          <h3 class="text-lg font-bold text-gray-800 mb-1 group-hover:text-purple-600 transition-colors">${product.name}</h3>
+          <div class="flex items-center justify-center mb-3">${createStarRating(product.rating)}<span class="text-gray-600 text-sm ml-2">(${Math.floor(Math.random()*100)+50})</span></div>
+          <div class="flex items-center justify-center gap-2 mb-5">
+            <span class="text-2xl font-bold gradient-text">$${product.price.toFixed(2)}</span>
+            <span class="text-sm text-gray-400 line-through">$${(product.price*1.3).toFixed(2)}</span>
+            <span class="text-xs text-green-600 font-semibold">Save 30%</span>
+          </div>
+          <button class="add-to-cart-btn btn-primary w-full py-3 px-6 text-white font-semibold rounded-2xl focus:outline-none focus:ring-4 focus:ring-purple-300 transition-all" data-product-id="${product.id}">
+            <span class="flex items-center justify-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.293 2.293a1 1 0 00-.293.707V19a2 2 0 002 2h2a2 2 0 002-2v-.172a1 1 0 00-.293-.707L8 16"/></svg>
+              <span>Add to Cart</span>
+            </span>
+          </button>
+        </div>
+      </div>`;
+    }
+
+    // === AUTH ===
+    function createAuthForm(isLoginMode, message) {
+      return `
+      <div class="glass-card w-full max-w-md rounded-3xl p-8 animate-bounce-in">
+        <div class="text-center mb-8">
+          <div class="inline-block p-4 rounded-full gradient-bg mb-4 animate-pulse-glow">
+            <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+          </div>
+          <h1 class="text-4xl font-bold text-white mb-2 animate-float">StyleHub</h1>
+          <p class="text-white/80 text-lg">${isLoginMode ? 'Welcome back to premium fashion!' : 'Join our exclusive fashion community'}</p>
+        </div>
+        ${message ? `<div id="auth-message" class="glass-card-dark p-4 rounded-2xl text-center mb-6 animate-slide-in-top"><p class="text-white font-medium">${message}</p></div>` : `<div id="auth-message" class="hidden"></div>`}
+        <form onsubmit="handleAuth(event, ${isLoginMode})" class="space-y-6">
+          <div class="space-y-4">
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <svg class="w-5 h-5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"/></svg>
+              </div>
+              <input type="email" name="email" placeholder="Email address" class="glass-card-dark w-full pl-12 pr-4 py-4 text-white placeholder-white/60 border-0 rounded-2xl focus:ring-2 focus:ring-white/50 transition-all" required />
+            </div>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <svg class="w-5 h-5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+              </div>
+              <input type="password" name="password" placeholder="Password" class="glass-card-dark w-full pl-12 pr-4 py-4 text-white placeholder-white/60 border-0 rounded-2xl focus:ring-2 focus:ring-white/50 transition-all" required />
+            </div>
+            ${!isLoginMode ? `
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <svg class="w-5 h-5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              </div>
+              <input type="password" name="confirmPassword" placeholder="Confirm Password" class="glass-card-dark w-full pl-12 pr-4 py-4 text-white placeholder-white/60 border-0 rounded-2xl focus:ring-2 focus:ring-white/50 transition-all" required />
+            </div>` : ''}
+          </div>
+          <button type="submit" class="btn-primary w-full py-4 text-white font-bold text-lg rounded-2xl focus:outline-none focus:ring-4 focus:ring-white/30 transition-all">
+            <span class="flex items-center justify-center gap-2">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${isLoginMode ? 'M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1' : 'M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z'}"/></svg>
+              <span>${isLoginMode ? 'Sign In to StyleHub' : 'Create Your Account'}</span>
+            </span>
+          </button>
+        </form>
+        <div class="mt-8 text-center">
+          <p class="text-white/80">${isLoginMode ? "Don't have an account?" : "Already have an account?"}</p>
+          <button onclick="renderAuthPage(${!isLoginMode})" class="mt-2 text-white font-bold text-lg hover:text-yellow-300 transition-colors underline-offset-4 hover:underline">${isLoginMode ? 'Create New Account' : 'Sign In Instead'}</button>
+        </div>
+      </div>`;
+    }
+
+    function handleAuth(event, isLoginMode) {
+      event.preventDefault();
+      const email = event.target.email.value.trim();
+      const password = event.target.password.value.trim();
+      let message = '';
+
+      if (isLoginMode) {
+        if (registeredUsers[email] && registeredUsers[email] === password) {
+          isLoggedIn = true; currentUser = email; showNotification('✅ Welcome back! Login successful 🎉'); saveState(); renderApp();
+        } else { message = '❌ Invalid credentials. Please try again.'; }
+      } else {
+        const confirmPassword = event.target.confirmPassword.value.trim();
+        if (password !== confirmPassword) message = '⚠️ Passwords do not match!';
+        else if (registeredUsers[email]) message = '⚠️ This email is already registered. Try logging in.';
+        else if (password.length < 6) message = '⚠️ Password must be at least 6 characters long.';
+        else {
+          registeredUsers[email] = password; isLoggedIn = true; currentUser = email; showNotification('🎉 Account created successfully! Welcome to StyleHub.'); saveState(); renderApp();
+        }
+      }
+
+      if (message) {
+        const msg = document.getElementById('auth-message');
+        if (msg) { msg.innerHTML = `<p class='text-white font-medium'>${message}</p>`; msg.classList.remove('hidden'); }
+      }
+    }
+
+    function logout() {
+      isLoggedIn = false; currentUser = null; currentPage='home'; saveState(); renderApp();
+    }
+
+    // === RENDERERS ===
+    function renderHeader() {
+      return `
+      <header class="bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/60 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex items-center justify-between py-4 gap-4">
+            <div class="flex items-center gap-8">
+              <a href="#" class="flex items-center gap-2" onclick="currentPage='home'; renderApp();">
+                <div class="w-10 h-10 rounded-xl gradient-bg flex items-center justify-center text-white font-extrabold">SH</div>
+                <span class="text-2xl font-extrabold gradient-text">StyleHub</span>
+              </a>
+              <nav class="hidden md:flex items-center gap-3">
+                ${['Men','Women','Children'].map(cat=>`<button class="px-4 py-2 rounded-xl hover:bg-gray-100 ${activeCategory===cat?'bg-gray-900 text-white':'text-gray-700'}" onclick="activeCategory='${cat}'; selectedSubCategory=null; currentPage='home'; renderApp();">${cat}</button>`).join('')}
+              </nav>
+            </div>
+            <div class="flex-1 max-w-xl hidden md:block">
+              <div class="flex items-center bg-gray-100 rounded-2xl px-4 py-2">
+                <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/></svg>
+                <input value="${searchQuery}" oninput="searchQuery=this.value; renderApp();" class="bg-transparent w-full pl-2 outline-none" placeholder="Search for products, categories..." />
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <button class="relative rounded-2xl px-3 py-2 hover:bg-gray-100" onclick="openCart()">
+                <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.293 2.293a1 1 0 00-.293.707V19a2 2 0 002 2h2a2 2 0 002-2v-.172a1 1 0 00-.293-.707L8 16"/></svg>
+                ${cartCount()?`<span class="absolute -top-1 -right-1 text-xs bg-purple-600 text-white rounded-full px-1.5">${cartCount()}</span>`:''}
+              </button>
+              <div class="relative group">
+                <button class="rounded-2xl px-3 py-2 hover:bg-gray-100 flex items-center gap-2">
+                  <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                  <span class="hidden sm:block text-sm font-semibold">${currentUser || 'Account'}</span>
+                </button>
+                <div class="hidden group-hover:block absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl p-2">
+                  <button class="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100" onclick="currentPage='orders'; renderApp();">My Orders</button>
+                  <button class="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100" onclick="logout()">Logout</button>
                 </div>
-            `;
-        }
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>`;
+    }
 
-        // Helper function to create the mobile menu
-        function createMobileMenu(isMobileMenuOpen) {
-            if (!isMobileMenuOpen) return '';
-            let menuHtml = `
-                <nav class="lg:hidden bg-white shadow-lg pb-4">
-                    <div class="flex flex-col items-center">
-                        <button
-                            class="w-full py-2 px-4 text-center text-lg font-medium text-gray-600 hover:bg-slate-100 transition-colors duration-200"
-                            onclick="handleNavigation('home'); toggleMobileMenu(false);"
-                        >
-                            Home
-                        </button>
-            `;
-            for (const categoryName in categories) {
-                const isCurrentCat = activeCategory === categoryName;
-                menuHtml += `
-                    <div class="w-full">
-                        <button
-                            class="w-full py-2 px-4 text-center text-lg font-medium text-gray-600 hover:bg-slate-100 transition-colors duration-200"
-                            onclick="toggleActiveCategory('${categoryName}')"
-                        >
-                            ${categoryName}
-                        </button>
-                        ${isCurrentCat ? `
-                            <div class="flex flex-col items-center bg-gray-50 max-h-60 overflow-y-auto">
-                                ${categories[categoryName].map(item => `
-                                    <a
-                                        href="#"
-                                        onclick="handleNavigation('products', '${item}'); toggleMobileMenu(false);"
-                                        class="block px-4 py-2 text-gray-700 hover:bg-slate-200 transition-colors duration-200"
-                                    >
-                                        ${item}
-                                    </a>
-                                `).join('')}
-                            </div>
-                        ` : ''}
-                    </div>
-                `;
-            }
-            menuHtml += `
-                    </div>
-                </nav>
-            `;
-            return menuHtml;
-        }
+    function renderHomePage() {
+      const left = activeCategory ? `
+      <aside class="hidden md:block md:w-64">
+        <div class="bg-white rounded-2xl p-4 shadow-sm sticky top-24">
+          <h4 class="font-semibold mb-2">${activeCategory} Categories</h4>
+          <div class="flex flex-col gap-1">
+            ${categories[activeCategory].map(sc=>`<button class="text-left px-3 py-2 rounded-xl ${selectedSubCategory===sc?'bg-gray-900 text-white':'hover:bg-gray-100'}" onclick="selectedSubCategory='${sc}'; renderApp();">${sc}</button>`).join('')}
+            <button class="text-left px-3 py-2 rounded-xl hover:bg-gray-100" onclick="selectedSubCategory=null; renderApp();">All</button>
+          </div>
+        </div>
+      </aside>` : '';
 
-        // === CORE LOGIC & RENDERING FUNCTIONS ===
+      // Filter logic
+      let list = products.slice();
+      if (activeCategory) list = list.filter(p=>p.category===activeCategory);
+      if (selectedSubCategory) list = list.filter(p=>p.subCategory===selectedSubCategory);
+      if (searchQuery) list = list.filter(p=> (p.name+" "+p.category+" "+p.subCategory).toLowerCase().includes(searchQuery.toLowerCase()));
 
-        // Function to handle the authentication logic
-        function handleAuth(event, isLoginMode) {
-            event.preventDefault();
-            const email = event.target.email.value;
-            const password = event.target.password.value;
-            let message = '';
+      const hero = `
+      <section class="hero-pattern gradient-bg text-white rounded-3xl p-8 md:p-12 shadow-md animate-slide-in-top">
+        <div class="grid md:grid-cols-2 gap-6 items-center">
+          <div>
+            <p class="uppercase tracking-widest text-white/80">Premium Fashion</p>
+            <h1 class="text-4xl md:text-5xl font-extrabold leading-tight mt-2">Elevate your style with <span class="underline decoration-yellow-300">StyleHub</span></h1>
+            <p class="mt-3 text-white/90">Discover curated looks for Men, Women and Children. New arrivals weekly. Free shipping over $99.</p>
+            <div class="mt-6 flex gap-3">
+              <button class="btn-primary px-6 py-3 rounded-2xl text-white font-semibold" onclick="activeCategory='Men'; selectedSubCategory=null; renderApp();">Shop Men</button>
+              <button class="bg-white/20 hover:bg-white/30 px-6 py-3 rounded-2xl font-semibold" onclick="activeCategory='Women'; selectedSubCategory=null; renderApp();">Shop Women</button>
+            </div>
+          </div>
+          <div class="hidden md:block">
+            <div class="bg-white/20 rounded-3xl h-56 md:h-64 flex items-center justify-center animate-float">
+              <span class="text-2xl font-semibold">🎁 Festive Sale: Extra 10% OFF</span>
+            </div>
+          </div>
+        </div>
+      </section>`;
 
-            if (isLoginMode) {
-                if (registeredUsers[email] && registeredUsers[email] === password) {
-                    isLoggedIn = true;
-                    message = 'Login successful!';
-                    renderApp();
-                } else {
-                    message = 'Invalid email or password.';
-                }
-            } else {
-                const confirmPassword = event.target.confirmPassword.value;
-                if (password !== confirmPassword) {
-                    message = 'Passwords do not match!';
-                } else if (registeredUsers[email]) {
-                    message = 'An account with this email already exists.';
-                } else {
-                    registeredUsers[email] = password;
-                    message = 'Sign up successful!';
-                    setTimeout(() => {
-                        const authFormContainer = document.querySelector('#auth-form-container');
-                        if (authFormContainer) authFormContainer.innerHTML = createAuthForm(true, 'Please log in with your new account.', 'info');
-                    }, 2000);
-                }
-            }
+      const grid = `
+      <section class="mt-8">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-bold">${activeCategory?activeCategory:'All'} ${selectedSubCategory?('› '+selectedSubCategory):''} ${searchQuery?('› "'+searchQuery+'"'):''}</h2>
+          <div class="flex items-center gap-2">
+            <label class="text-sm text-gray-600">Sort:</label>
+            <select class="bg-white border rounded-xl px-3 py-2" onchange="sortProducts(this.value)">
+              <option value="popular">Most Popular</option>
+              <option value="price_asc">Price: Low to High</option>
+              <option value="price_desc">Price: High to Low</option>
+              <option value="rating">Top Rated</option>
+            </select>
+          </div>
+        </div>
+        ${list.length? `<div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">${list.map(productCard).join('')}</div>` : `<div class="bg-white p-10 rounded-2xl text-center">No products found.</div>`}
+      </section>`;
 
-            const authMessageDiv = document.querySelector('#auth-message');
-            if (authMessageDiv) {
-                authMessageDiv.textContent = message;
-                authMessageDiv.className = `p-3 rounded-lg text-sm mb-4 text-center ${message.includes('successful') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`;
-                authMessageDiv.style.display = 'block';
-            }
-        }
-        
-        // Function to create the auth form HTML
-        function createAuthForm(isLoginMode, message, messageType) {
-            return `
-                <div id="auth-form-container" class="w-full max-w-sm p-8 bg-white rounded-xl shadow-2xl transition-all duration-700 ease-out transform opacity-100 translate-y-0">
-                    <h2 class="text-3xl font-bold text-center mb-6 text-slate-800">
-                        ${isLoginMode ? 'Welcome Back!' : 'Create an Account'}
-                    </h2>
-                    ${message ? `<div id="auth-message" class="p-3 rounded-lg text-sm mb-4 text-center ${messageType === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${message}</div>` : `<div id="auth-message" class="hidden"></div>`}
-                    <form onsubmit="handleAuth(event, ${isLoginMode})">
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                                <input type="email" name="email" placeholder="you@example.com" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-300" required />
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                                <input type="password" name="password" placeholder="Password" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-300" required />
-                            </div>
-                            ${!isLoginMode ? `
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
-                                    <input type="password" name="confirmPassword" placeholder="Confirm Password" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-300" required />
-                                </div>
-                            ` : ''}
-                            <button type="submit" class="w-full py-3 mt-6 text-white font-semibold rounded-lg bg-slate-800 hover:bg-slate-700 focus:outline-none focus:ring-4 focus:ring-slate-500 transition duration-300 transform hover:-translate-y-1">
-                                ${isLoginMode ? 'Login' : 'Sign Up'}
-                            </button>
-                        </div>
-                    </form>
-                    <p class="mt-4 text-center text-sm text-gray-600">
-                        ${isLoginMode ? "Don't have an account?" : "Already have an account?"}
-                        <span onclick="renderAuthPage(${!isLoginMode})" class="font-semibold text-blue-600 cursor-pointer hover:text-blue-500 ml-1 transition-colors duration-200">
-                            ${isLoginMode ? 'Sign Up' : 'Login'}
-                        </span>
-                    </p>
-                </div>
-            `;
-        }
+      return `
+      <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div class="grid md:grid-cols-[auto,1fr] gap-6">
+          ${left}
+          <div>${hero}${grid}</div>
+        </div>
+      </main>`;
+    }
 
-        // Function to render the authentication page
-        function renderAuthPage(isLoginMode = true) {
-            const appContainer = document.getElementById('app-container');
-            appContainer.innerHTML = `
-                <div class="flex items-center justify-center min-h-screen bg-slate-100 p-4">
-                    ${createAuthForm(isLoginMode)}
-                </div>
-            `;
-            setTimeout(() => {
-                const authFormContainer = document.querySelector('#auth-form-container');
-                if (authFormContainer) authFormContainer.classList.add('animate-bounce-in');
-            }, 100);
-        }
+    function sortProducts(type){
+      const cmp = {
+        price_asc: (a,b)=>a.price-b.price,
+        price_desc: (a,b)=>b.price-a.price,
+        rating: (a,b)=>b.rating-a.rating,
+        popular: ()=>0,
+      }[type] || (()=>0);
+      products.sort(cmp); renderApp();
+    }
 
-        // Function to add a product to the cart
-        function addToCart(productId) {
-            const productToAdd = products.find(p => p.id === parseInt(productId));
-            if (!productToAdd) return;
-            
-            const existingItem = cartItems.find(item => item.id === productToAdd.id);
-            if (existingItem) {
-                cartItems = cartItems.map(item =>
-                    item.id === productToAdd.id ? { ...item, quantity: item.quantity + 1 } : item
-                );
-            } else {
-                cartItems = [...cartItems, { ...productToAdd, quantity: 1 }];
-            }
-            updateCartCount();
-        }
+    function renderCheckoutPage() {
+      const items = cartItems.map(ci=>({ ...getProduct(ci.id), qty: ci.qty }));
+      const subtotal = cartSubtotal();
+      const shipping = subtotal>99 ? 0 : 9.99;
+      const tax = subtotal*0.08;
+      const total = subtotal + shipping + tax;
 
-        // Function to remove a product from the cart
-        function removeFromCart(productId) {
-            cartItems = cartItems.filter(item => item.id !== productId);
-            updateCartCount();
-            renderCartPage();
-        }
+      return `
+      <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <h2 class="text-2xl font-extrabold mb-6">Checkout</h2>
+        <div class="grid lg:grid-cols-3 gap-6">
+          <div class="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm">
+            <h3 class="font-semibold mb-4">Shipping Details</h3>
+            <form id="checkout-form" class="grid md:grid-cols-2 gap-4">
+              <input class="border rounded-xl px-4 py-3" placeholder="Full Name" required />
+              <input class="border rounded-xl px-4 py-3" placeholder="Phone" required />
+              <input class="md:col-span-2 border rounded-xl px-4 py-3" placeholder="Address" required />
+              <div class="grid grid-cols-3 gap-3 md:col-span-2">
+                <input class="border rounded-xl px-4 py-3" placeholder="City" required />
+                <input class="border rounded-xl px-4 py-3" placeholder="State" required />
+                <input class="border rounded-xl px-4 py-3" placeholder="PIN Code" required />
+              </div>
+              <button class="btn-primary mt-2 px-6 py-3 rounded-2xl text-white font-semibold md:col-span-2" onclick="placeOrder(event)">Place Order</button>
+            </form>
+          </div>
+          <div class="bg-white rounded-2xl p-6 shadow-sm">
+            <h3 class="font-semibold mb-4">Order Summary</h3>
+            <div class="flex flex-col gap-3 max-h-72 overflow-auto">
+              ${items.map(it=>`<div class='flex items-center justify-between'><span>${it.name} × ${it.qty}</span><span>${formatCurrency(it.price*it.qty)}</span></div>`).join('')}
+            </div>
+            <div class="mt-4 border-t pt-4 text-sm">
+              <div class="flex justify-between"><span>Subtotal</span><span>${formatCurrency(subtotal)}</span></div>
+              <div class="flex justify-between"><span>Shipping</span><span>${shipping?formatCurrency(shipping):'FREE'}</span></div>
+              <div class="flex justify-between"><span>Tax (8%)</span><span>${formatCurrency(tax)}</span></div>
+              <div class="flex justify-between font-bold text-lg mt-2"><span>Total</span><span>${formatCurrency(total)}</span></div>
+            </div>
+          </div>
+        </div>
+      </main>`;
+    }
 
-        // Function to update the quantity of a cart item
-        function updateQuantity(productId, newQuantity) {
-            if (newQuantity <= 0) {
-                removeFromCart(productId);
-                return;
-            }
-            cartItems = cartItems.map(item =>
-                item.id === productId ? { ...item, quantity: newQuantity } : item
-            );
-            updateCartCount();
-            renderCartPage();
-        }
+    function placeOrder(e){
+      e.preventDefault();
+      if(!cartItems.length){ showNotification('Cart is empty', 'error'); return; }
+      const orderId = 'ORD' + Math.floor(Math.random()*1e6).toString().padStart(6,'0');
+      const existing = JSON.parse(localStorage.getItem('stylehub_orders')||'[]');
+      existing.push({ id: orderId, user: currentUser, items: cartItems, date: new Date().toISOString() });
+      localStorage.setItem('stylehub_orders', JSON.stringify(existing));
+      cartItems = []; saveState();
+      showNotification('🎉 Order placed successfully! #' + orderId);
+      currentPage='orders'; renderApp();
+    }
 
-        // Function to update the cart count in the header
-        function updateCartCount() {
-            const cartCountElement = document.getElementById('cart-count');
-            const totalCount = cartItems.reduce((total, item) => total + item.quantity, 0);
-            if (cartCountElement) {
-                cartCountElement.textContent = totalCount;
-            }
-        }
+    function renderOrdersPage(){
+      const all = JSON.parse(localStorage.getItem('stylehub_orders')||'[]');
+      const my = all.filter(o=>o.user===currentUser).reverse();
+      return `
+      <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <h2 class="text-2xl font-extrabold mb-6">My Orders</h2>
+        ${my.length? `<div class='space-y-4'>${my.map(o=>{
+          const total = o.items.reduce((a,c)=>a+getProduct(c.id).price*c.qty,0);
+          return `<div class='bg-white rounded-2xl p-5 shadow-sm flex items-center justify-between'>
+            <div>
+              <div class='font-bold'>#${o.id}</div>
+              <div class='text-sm text-gray-500'>${new Date(o.date).toLocaleString()}</div>
+              <div class='text-sm mt-1'>${o.items.length} item(s)</div>
+            </div>
+            <div class='font-bold'>${formatCurrency(total)}</div>
+          </div>`;}).join('')}</div>` : `<div class='bg-white rounded-2xl p-10 text-center'>No orders yet.</div>`}
+      </main>`;
+    }
 
-        // Function to handle page navigation
-        function handleNavigation(page, subCategory = null) {
-            currentPage = page;
-            selectedSubCategory = subCategory;
-            renderApp();
-        }
+    // === CART ===
+    function openCart(){ document.getElementById('cart-drawer')?.classList.remove('hidden'); document.getElementById('cart-backdrop')?.classList.remove('hidden'); }
+    function closeCart(){ document.getElementById('cart-drawer')?.classList.add('hidden'); document.getElementById('cart-backdrop')?.classList.add('hidden'); }
 
-        // Function to toggle the mobile menu
-        function toggleMobileMenu(forceState = null) {
-            const mobileMenu = document.getElementById('mobile-menu');
-            if (mobileMenu) {
-                mobileMenu.classList.toggle('hidden', forceState !== null ? !forceState : null);
-            }
-        }
-        
-        // Function to toggle the active category for the dropdown
-        function toggleActiveCategory(categoryName) {
-            activeCategory = activeCategory === categoryName ? null : categoryName;
-            renderHeader(); // Re-render the header to show/hide the dropdown
-        }
-        
-        // Function to clear cart and navigate to home after a successful order
-        function clearCart() {
-            cartItems = [];
-            handleNavigation('home');
-        }
+    function addToCart(id){
+      const idx = cartItems.findIndex(ci=>ci.id===id);
+      if (idx>-1) cartItems[idx].qty += 1; else cartItems.push({id, qty:1});
+      saveState(); showNotification('🛒 Added to cart'); renderApp();
+    }
+    function changeQty(id, delta){
+      const idx = cartItems.findIndex(ci=>ci.id===id); if (idx===-1) return;
+      cartItems[idx].qty += delta; if (cartItems[idx].qty<=0) cartItems.splice(idx,1);
+      saveState(); renderApp();
+    }
+    function removeFromCart(id){ cartItems = cartItems.filter(ci=>ci.id!==id); saveState(); renderApp(); }
 
-        // Main rendering function that decides which page to show
-        function renderApp() {
-            const appContainer = document.getElementById('app-container');
-            let contentHtml = '';
+    function renderCartDrawer(){
+      const items = cartItems.map(ci=>({ ...getProduct(ci.id), qty: ci.qty }));
+      const subtotal = cartSubtotal();
+      return `
+      <div id="cart-backdrop" class="hidden fixed inset-0 modal-backdrop z-40" onclick="closeCart()"></div>
+      <aside id="cart-drawer" class="hidden fixed right-0 top-0 h-full w-full sm:w-[420px] bg-white z-50 shadow-2xl flex flex-col">
+        <div class="p-4 border-b flex items-center justify-between">
+          <h3 class="font-bold text-lg">Your Cart (${cartCount()} items)</h3>
+          <button class="rounded-xl px-3 py-1 hover:bg-gray-100" onclick="closeCart()">Close</button>
+        </div>
+        <div class="flex-1 overflow-auto p-4 space-y-3">
+          ${items.length? items.map(it=>`
+            <div class='flex gap-3 items-center'>
+              <img src='${it.image}' class='w-16 h-16 rounded-xl object-cover' alt='${it.name}'/>
+              <div class='flex-1'>
+                <div class='font-semibold'>${it.name}</div>
+                <div class='text-sm text-gray-500'>${it.subCategory}</div>
+                <div class='font-bold mt-1'>${formatCurrency(it.price)}</div>
+              </div>
+              <div class='flex items-center gap-2'>
+                <button class='px-2 py-1 rounded-lg bg-gray-100' onclick='changeQty(${it.id},-1)'>-</button>
+                <span class='min-w-6 text-center'>${it.qty}</span>
+                <button class='px-2 py-1 rounded-lg bg-gray-100' onclick='changeQty(${it.id},1)'>+</button>
+              </div>
+              <button class='ml-2 text-red-500' onclick='removeFromCart(${it.id})'>Remove</button>
+            </div>`).join('') : `<div class='text-center text-gray-500 mt-10'>Your cart is empty.</div>`}
+        </div>
+        <div class="p-4 border-t">
+          <div class="flex items-center justify-between mb-3"><span class="text-sm text-gray-600">Subtotal</span><span class="font-bold">${formatCurrency(subtotal)}</span></div>
+          <button class="btn-primary w-full py-3 rounded-2xl text-white font-semibold ${items.length? '' : 'opacity-50 cursor-not-allowed'}" ${items.length? `onclick="currentPage='checkout'; closeCart(); renderApp();"` : 'disabled'}>Checkout</button>
+        </div>
+      </aside>`;
+    }
 
-            // Render header if logged in
-            if (isLoggedIn) {
-                let isMobileMenuOpen = document.querySelector('.mobile-menu:not(.hidden)') ? true : false;
-                
-                let headerHtml = `
-                    <header class="sticky top-0 z-50 bg-white shadow-lg">
-                        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-                            <div class="text-2xl font-extrabold text-slate-800 cursor-pointer" onclick="handleNavigation('home')">
-                                Cloth Shop
-                            </div>
-                            <nav class="hidden lg:flex items-center space-x-8">
-                                <button onclick="handleNavigation('home')" class="text-gray-600 hover:text-gray-900 transition-colors duration-200 text-lg font-medium">
-                                    Home
-                                </button>
-                                ${Object.keys(categories).map((categoryName) => `
-                                    <div class="relative group" onmouseenter="activeCategory = '${categoryName}'; renderHeader();" onmouseleave="activeCategory = null; renderHeader();">
-                                        <a href="#" class="text-gray-600 hover:text-gray-900 transition-colors duration-200 text-lg font-medium">
-                                            ${categoryName}
-                                        </a>
-                                        ${activeCategory === categoryName ? `
-                                            <div class="absolute left-0 top-full mt-2 w-48 bg-white rounded-lg shadow-xl py-2 z-10 max-h-60 overflow-y-auto">
-                                                ${categories[categoryName].map((item) => `
-                                                    <a href="#" onclick="handleNavigation('products', '${item}')" class="block px-4 py-2 text-gray-700 hover:bg-slate-100 transition-colors duration-200">
-                                                        ${item}
-                                                    </a>
-                                                `).join('')}
-                                            </div>
-                                        ` : ''}
-                                    </div>
-                                `).join('')}
-                            </nav>
-                            <div class="flex items-center space-x-4">
-                                <button onclick="handleNavigation('cart')" class="relative p-2 text-gray-600 hover:text-gray-900 transition-colors duration-200">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shopping-cart">
-                                        <circle cx="8" cy="21" r="1" /><circle cx="19" cy="21" r="1" /><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
-                                    </svg>
-                                    <span id="cart-count" class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">
-                                        ${cartItems.reduce((total, item) => total + item.quantity, 0)}
-                                    </span>
-                                </button>
-                                <button onclick="toggleMobileMenu()" class="lg:hidden p-2 text-gray-600 hover:text-gray-900 transition-colors duration-200">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu">
-                                        <line x1="4" x2="20" y1="12" y2="12" /><line x1="4" x2="20" y1="6" y2="6" /><line x1="4" x2="20" y1="18" y2="18" />
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                        <nav id="mobile-menu" class="lg:hidden bg-white shadow-lg pb-4 ${isMobileMenuOpen ? '' : 'hidden'}">
-                            <div class="flex flex-col items-center">
-                                <button
-                                    onclick="handleNavigation('home'); toggleMobileMenu(false);"
-                                    class="w-full py-2 px-4 text-center text-lg font-medium text-gray-600 hover:bg-slate-100 transition-colors duration-200"
-                                >
-                                    Home
-                                </button>
-                                ${Object.keys(categories).map((categoryName) => `
-                                    <div class="w-full">
-                                        <button
-                                            onclick="activeCategory = (activeCategory === '${categoryName}' ? null : '${categoryName}'); renderApp();"
-                                            class="w-full py-2 px-4 text-center text-lg font-medium text-gray-600 hover:bg-slate-100 transition-colors duration-200"
-                                        >
-                                            ${categoryName}
-                                        </button>
-                                        ${activeCategory === categoryName ? `
-                                            <div class="flex flex-col items-center bg-gray-50 max-h-60 overflow-y-auto">
-                                                ${categories[categoryName].map((item) => `
-                                                    <a href="#" onclick="handleNavigation('products', '${item}'); toggleMobileMenu(false);" class="block px-4 py-2 text-gray-700 hover:bg-slate-200 transition-colors duration-200">
-                                                        ${item}
-                                                    </a>
-                                                `).join('')}
-                                            </div>
-                                        ` : ''}
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </nav>
-                    </header>
-                `;
-                appContainer.innerHTML = headerHtml;
-                const mainContent = document.createElement('main');
-                appContainer.appendChild(mainContent);
-                switch (currentPage) {
-                    case 'home':
-                        renderHomePage(mainContent);
-                        break;
-                    case 'products':
-                        renderProductListPage(mainContent);
-                        break;
-                    case 'cart':
-                        renderCartPage(mainContent);
-                        break;
-                    case 'checkout':
-                        renderCheckoutPage(mainContent);
-                        break;
-                }
-            } else {
-                renderAuthPage();
-            }
-            addGlobalListeners();
-        }
+    // === ROOT RENDER ===
+    function renderAuthPage(isLogin = true){
+      currentPage = 'auth';
+      document.getElementById('app-container').innerHTML = `
+        <div class='min-h-screen gradient-bg hero-pattern flex items-center justify-center p-6'>
+          ${createAuthForm(isLogin)}
+        </div>`;
+    }
 
-        // Function to re-render just the header to handle dropdowns without a full page refresh
-        function renderHeader() {
-            if (!isLoggedIn) return; // Only render header if logged in
-            const appContainer = document.getElementById('app-container');
-            const mainContent = appContainer.querySelector('main');
-            let isMobileMenuOpen = document.getElementById('mobile-menu')?.classList.contains('hidden') === false;
+    function attachProductHandlers(){
+      document.querySelectorAll('.add-to-cart-btn').forEach(btn=>{
+        btn.addEventListener('click', ()=> addToCart(parseInt(btn.dataset.productId)));
+      });
+    }
 
-            const headerHtml = `
-                <header class="sticky top-0 z-50 bg-white shadow-lg">
-                    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-                        <div class="text-2xl font-extrabold text-slate-800 cursor-pointer" onclick="handleNavigation('home')">
-                            Cloth Shop
-                        </div>
-                        <nav class="hidden lg:flex items-center space-x-8">
-                            <button onclick="handleNavigation('home')" class="text-gray-600 hover:text-gray-900 transition-colors duration-200 text-lg font-medium">
-                                Home
-                            </button>
-                            ${Object.keys(categories).map((categoryName) => `
-                                <div class="relative" onmouseenter="activeCategory = '${categoryName}'; renderHeader();" onmouseleave="activeCategory = null; renderHeader();">
-                                    <a href="#" class="text-gray-600 hover:text-gray-900 transition-colors duration-200 text-lg font-medium">
-                                        ${categoryName}
-                                    </a>
-                                    ${activeCategory === categoryName ? `
-                                        <div class="absolute left-0 top-full mt-2 w-48 bg-white rounded-lg shadow-xl py-2 z-10 max-h-60 overflow-y-auto">
-                                            ${categories[categoryName].map((item) => `
-                                                <a href="#" onclick="handleNavigation('products', '${item}')" class="block px-4 py-2 text-gray-700 hover:bg-slate-100 transition-colors duration-200">
-                                                    ${item}
-                                                </a>
-                                            `).join('')}
-                                        </div>
-                                    ` : ''}
-                                </div>
-                            `).join('')}
-                        </nav>
-                        <div class="flex items-center space-x-4">
-                            <button onclick="handleNavigation('cart')" class="relative p-2 text-gray-600 hover:text-gray-900 transition-colors duration-200">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shopping-cart">
-                                    <circle cx="8" cy="21" r="1" /><circle cx="19" cy="21" r="1" /><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
-                                </svg>
-                                <span id="cart-count" class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">
-                                    ${cartItems.reduce((total, item) => total + item.quantity, 0)}
-                                </span>
-                            </button>
-                            <button onclick="toggleMobileMenu()" class="lg:hidden p-2 text-gray-600 hover:text-gray-900 transition-colors duration-200">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu">
-                                    <line x1="4" x2="20" y1="12" y2="12" /><line x1="4" x2="20" y1="6" y2="6" /><line x1="4" x2="20" y1="18" y2="18" />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                    <nav id="mobile-menu" class="lg:hidden bg-white shadow-lg pb-4 ${isMobileMenuOpen ? '' : 'hidden'}">
-                        <div class="flex flex-col items-center">
-                            <button
-                                onclick="handleNavigation('home'); toggleMobileMenu(false);"
-                                class="w-full py-2 px-4 text-center text-lg font-medium text-gray-600 hover:bg-slate-100 transition-colors duration-200"
-                            >
-                                Home
-                            </button>
-                            ${Object.keys(categories).map((categoryName) => `
-                                <div class="w-full">
-                                    <button
-                                        onclick="activeCategory = (activeCategory === '${categoryName}' ? null : '${categoryName}'); renderHeader();"
-                                        class="w-full py-2 px-4 text-center text-lg font-medium text-gray-600 hover:bg-slate-100 transition-colors duration-200"
-                                    >
-                                        ${categoryName}
-                                    </button>
-                                    ${activeCategory === categoryName ? `
-                                        <div class="flex flex-col items-center bg-gray-50 max-h-60 overflow-y-auto">
-                                            ${categories[categoryName].map((item) => `
-                                                <a href="#" onclick="handleNavigation('products', '${item}'); toggleMobileMenu(false);" class="block px-4 py-2 text-gray-700 hover:bg-slate-200 transition-colors duration-200">
-                                                    ${item}
-                                                </a>
-                                            `).join('')}
-                                        </div>
-                                    ` : ''}
-                                </div>
-                            `).join('')}
-                        </div>
-                    </nav>
-                </header>
-            `;
+    function renderApp(){
+      if (!isLoggedIn) { renderAuthPage(true); return; }
+      const header = renderHeader();
+      const main = currentPage==='home' ? renderHomePage() : currentPage==='checkout' ? renderCheckoutPage() : renderOrdersPage();
+      const cart = renderCartDrawer();
+      const html = header + main + cart + renderFooter();
+      document.getElementById('app-container').innerHTML = html;
+      attachProductHandlers();
+    }
 
-            const headerElement = appContainer.querySelector('header');
-            if (headerElement) {
-                headerElement.outerHTML = headerHtml;
-            }
-        }
+    function renderFooter(){
+      return `
+      <footer class="mt-12 border-t">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 grid md:grid-cols-4 gap-6 text-sm">
+          <div>
+            <div class="flex items-center gap-2 mb-2"><div class="w-8 h-8 rounded-lg gradient-bg text-white flex items-center justify-center font-extrabold">SH</div><span class="font-extrabold">StyleHub</span></div>
+            <p class="text-gray-500">Premium fashion for everyone. Quality, comfort, and style in every stitch.</p>
+          </div>
+          <div>
+            <h4 class="font-semibold mb-2">Shop</h4>
+            <ul class="space-y-1">
+              <li><button onclick="activeCategory='Men'; selectedSubCategory=null; renderApp();" class="hover:underline">Men</button></li>
+              <li><button onclick="activeCategory='Women'; selectedSubCategory=null; renderApp();" class="hover:underline">Women</button></li>
+              <li><button onclick="activeCategory='Children'; selectedSubCategory=null; renderApp();" class="hover:underline">Children</button></li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="font-semibold mb-2">Support</h4>
+            <ul class="space-y-1">
+              <li><a href="#" class="hover:underline">Contact</a></li>
+              <li><a href="#" class="hover:underline">Shipping & Returns</a></li>
+              <li><a href="#" class="hover:underline">FAQs</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="font-semibold mb-2">Newsletter</h4>
+            <div class="flex gap-2">
+              <input class="border rounded-xl px-4 py-2 w-full" placeholder="Your email" />
+              <button class="btn-primary px-4 py-2 rounded-xl text-white">Join</button>
+            </div>
+          </div>
+        </div>
+        <div class="text-center text-xs text-gray-500 pb-6">© <span id="year"></span> StyleHub. All rights reserved.</div>
+      </footer>`;
+    }
 
-        // Home Page Rendering
-        function renderHomePage(container) {
-            const mensWear = products.filter(p => p.category === 'Men');
-            const trendingItems = [...products].sort(() => 0.5 - Math.random()).slice(0, 4);
-
-            const heroHtml = `
-                <section class="relative w-full h-96 lg:h-[600px] flex items-center justify-center p-4 text-center bg-cover bg-center rounded-b-3xl overflow-hidden" style="background-image: url('https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=1920&auto=format&fit=crop')">
-                    <div class="absolute inset-0 bg-black opacity-30"></div>
-                    <div class="relative z-10 flex flex-col items-center text-white">
-                        <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight drop-shadow-lg">
-                            Elevate Your Style
-                        </h1>
-                    </div>
-                </section>
-            `;
-            
-            const menSectionHtml = `
-                <section class="container mx-auto px-4 py-12">
-                    <h2 class="text-3xl font-bold text-center mb-8 text-slate-800">Men's New Arrivals</h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                        ${mensWear.map(createProductCard).join('')}
-                    </div>
-                </section>
-            `;
-
-            const featuredProducts = products.filter(p => p.id === 1 || p.id === 4 || p.id === 7 || p.id === 9);
-            const featuredSectionHtml = `
-                <section class="container mx-auto px-4 py-12">
-                    <h2 class="text-3xl font-bold text-center mb-8 text-slate-800">Featured Collections</h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                        ${featuredProducts.map(createProductCard).join('')}
-                    </div>
-                </section>
-            `;
-
-            const trendingSectionHtml = `
-                <section class="container mx-auto px-4 py-12 bg-slate-100 rounded-xl shadow-inner">
-                    <h2 class="text-3xl font-bold text-center mb-8 text-slate-800">Trending Now</h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                        ${trendingItems.map(createProductCard).join('')}
-                    </div>
-                </section>
-            `;
-
-            container.innerHTML = heroHtml + menSectionHtml + featuredSectionHtml + trendingSectionHtml;
-        }
-
-        // Product List Page Rendering
-        function renderProductListPage(container) {
-            const filteredProducts = products.filter(p => p.subCategory === selectedSubCategory);
-            const productListHtml = `
-                <section class="container mx-auto px-4 py-12">
-                    <h2 class="text-3xl font-bold text-center mb-8 text-slate-800">
-                        ${selectedSubCategory}
-                    </h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        ${filteredProducts.map(createProductCard).join('')}
-                    </div>
-                </section>
-            `;
-            container.innerHTML = productListHtml;
-        }
-
-        // Cart Page Rendering
-        function renderCartPage(container) {
-            const total = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-            const cartHtml = `
-                <section class="container mx-auto px-4 py-12">
-                    <h2 class="text-3xl font-bold text-center mb-8 text-slate-800">Shopping Cart</h2>
-                    ${cartItems.length === 0 ? `
-                        <p class="text-center text-gray-500">Your cart is empty.</p>
-                    ` : `
-                        <div class="bg-white rounded-xl shadow-lg overflow-hidden p-6">
-                            <ul class="divide-y divide-gray-200">
-                                ${cartItems.map(item => `
-                                    <li class="flex flex-col sm:flex-row items-center py-4">
-                                        <img src="${item.image}" alt="${item.name}" class="w-24 h-24 object-cover rounded-md flex-shrink-0" />
-                                        <div class="flex-1 mt-4 sm:mt-0 sm:ml-6">
-                                            <h3 class="text-lg font-semibold text-slate-800">${item.name}</h3>
-                                            <p class="text-gray-600">$${item.price.toFixed(2)}</p>
-                                        </div>
-                                        <div class="flex items-center mt-4 sm:mt-0">
-                                            <button 
-                                                class="update-quantity-btn px-3 py-1 bg-gray-200 text-gray-800 rounded-l-md font-bold hover:bg-gray-300 transition-colors"
-                                                data-product-id="${item.id}"
-                                                data-action="decrement"
-                                            >
-                                                -
-                                            </button>
-                                            <span class="px-4 py-1 bg-gray-100 text-gray-800 font-medium">
-                                                ${item.quantity}
-                                            </span>
-                                            <button 
-                                                class="update-quantity-btn px-3 py-1 bg-gray-200 text-gray-800 rounded-r-md font-bold hover:bg-gray-300 transition-colors"
-                                                data-product-id="${item.id}"
-                                                data-action="increment"
-                                            >
-                                                +
-                                            </button>
-                                        </div>
-                                        <div class="text-lg font-semibold text-slate-800 mt-4 sm:mt-0 sm:ml-6 w-32 text-right">
-                                            $${(item.price * item.quantity).toFixed(2)}
-                                        </div>
-                                        <button 
-                                            class="remove-from-cart-btn mt-4 sm:mt-0 sm:ml-6 text-red-500 hover:text-red-700 transition-colors"
-                                            data-product-id="${item.id}"
-                                        >
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-circle"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
-                                        </button>
-                                    </li>
-                                `).join('')}
-                            </ul>
-                            <div class="flex justify-between items-center pt-6 mt-6 border-t border-gray-200">
-                                <h3 class="text-2xl font-bold text-slate-800">Total</h3>
-                                <span class="text-2xl font-bold text-slate-800">$${total.toFixed(2)}</span>
-                            </div>
-                            <div class="flex justify-end mt-6">
-                                <button
-                                    onclick="handleNavigation('checkout')"
-                                    class="px-8 py-3 bg-slate-800 text-white rounded-lg font-semibold shadow-lg hover:bg-slate-700 transition-transform duration-300 transform hover:-translate-y-1"
-                                >
-                                    Proceed to Checkout
-                                </button>
-                            </div>
-                        </div>
-                    `}
-                </section>
-            `;
-            container.innerHTML = cartHtml;
-        }
-
-        // Checkout Page Rendering
-        function renderCheckoutPage(container) {
-            const total = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-            let paymentMethod = 'credit_card';
-            let isOrdering = false;
-
-            const checkoutHtml = `
-                <section class="container mx-auto px-4 py-12">
-                    <h2 class="text-3xl font-bold text-center mb-8 text-slate-800">Checkout</h2>
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-lg">
-                            <h3 class="text-2xl font-bold text-slate-800 mb-4">Order Summary</h3>
-                            <ul class="divide-y divide-gray-200">
-                                ${cartItems.map(item => `
-                                    <li class="flex justify-between items-center py-2">
-                                        <span class="text-gray-600">${item.name} (x${item.quantity})</span>
-                                        <span class="font-medium text-slate-800">$${(item.price * item.quantity).toFixed(2)}</span>
-                                    </li>
-                                `).join('')}
-                            </ul>
-                            <div class="flex justify-between items-center pt-4 mt-4 border-t border-gray-200">
-                                <h3 class="text-xl font-bold text-slate-800">Total</h3>
-                                <span class="text-xl font-bold text-slate-800">$${total.toFixed(2)}</span>
-                            </div>
-                        </div>
-                        <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg">
-                            <h3 class="text-2xl font-bold text-slate-800 mb-4">Shipping & Payment</h3>
-                            <form id="checkout-form" onsubmit="handleCheckout(event)">
-                                <div class="space-y-6">
-                                    <div>
-                                        <h4 class="font-semibold text-lg text-slate-800 mb-2">Shipping Address</h4>
-                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            <input type="text" placeholder="Full Name" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-300" />
-                                            <input type="text" placeholder="Address Line 1" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-300" />
-                                            <input type="text" placeholder="City" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-300" />
-                                            <input type="text" placeholder="State / Province" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-300" />
-                                            <input type="text" placeholder="Zip / Postal Code" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-300" />
-                                            <input type="text" placeholder="Country" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-300" />
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <h4 class="font-semibold text-lg text-slate-800 mb-2">Payment Method</h4>
-                                        <div class="flex flex-col space-y-2">
-                                            <label class="flex items-center space-x-2">
-                                                <input type="radio" name="payment" value="credit_card" checked class="form-radio text-blue-600" />
-                                                <span>Credit Card</span>
-                                            </label>
-                                            <label class="flex items-center space-x-2">
-                                                <input type="radio" name="payment" value="paypal" class="form-radio text-blue-600" />
-                                                <span>PayPal</span>
-                                            </label>
-                                            <label class="flex items-center space-x-2">
-                                                <input type="radio" name="payment" value="qr_code" class="form-radio text-blue-600" />
-                                                <span>QR Code</span>
-                                            </label>
-                                            <label class="flex items-center space-x-2">
-                                                <input type="radio" name="payment" value="cash_on_delivery" class="form-radio text-blue-600" />
-                                                <span>Cash on Delivery</span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                    <div id="qr-code-section" class="hidden flex-col items-center justify-center p-4 bg-gray-50 rounded-lg shadow-inner">
-                                        <p class="text-gray-600 mb-4">Please scan the QR code to complete your payment.</p>
-                                        <img src="https://i.imgur.com/uG90s4O.png" alt="QR Code" class="w-48 h-48 rounded-lg" />
-                                    </div>
-                                    <button
-                                        type="submit"
-                                        id="place-order-btn"
-                                        class="w-full py-3 mt-6 text-white font-semibold rounded-lg bg-slate-800 hover:bg-slate-700 focus:outline-none focus:ring-4 focus:ring-slate-500 transition duration-300 transform hover:-translate-y-1"
-                                    >
-                                        Place Order
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </section>
-                <div id="order-success-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div class="bg-white p-8 rounded-xl shadow-2xl text-center max-w-md w-full animate-bounce-in">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-green-500 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <h3 class="text-2xl font-bold text-slate-800 mb-2">Order Placed!</h3>
-                        <p class="text-gray-600">Thank you for your purchase. We'll send you a confirmation email shortly.</p>
-                    </div>
-                </div>
-            `;
-
-            container.innerHTML = checkoutHtml;
-
-            // Add listener for payment method change
-            document.querySelectorAll('input[name="payment"]').forEach(radio => {
-                radio.addEventListener('change', (e) => {
-                    const qrSection = document.getElementById('qr-code-section');
-                    if (e.target.value === 'qr_code') {
-                        qrSection.classList.remove('hidden');
-                        qrSection.classList.add('flex');
-                    } else {
-                        qrSection.classList.add('hidden');
-                        qrSection.classList.remove('flex');
-                    }
-                });
-            });
-        }
-
-        function handleCheckout(event) {
-            event.preventDefault();
-            const placeOrderBtn = document.getElementById('place-order-btn');
-            const successModal = document.getElementById('order-success-modal');
-
-            placeOrderBtn.disabled = true;
-            placeOrderBtn.textContent = 'Placing Order...';
-            
-            setTimeout(() => {
-                successModal.classList.remove('hidden');
-                setTimeout(() => {
-                    clearCart();
-                }, 2000);
-            }, 1000);
-        }
-
-        // Global event listeners (delegation)
-        function addGlobalListeners() {
-            document.body.addEventListener('click', (e) => {
-                // Add to Cart button
-                if (e.target.classList.contains('add-to-cart-btn')) {
-                    const productId = e.target.getAttribute('data-product-id');
-                    addToCart(productId);
-                }
-                // Remove from Cart button
-                if (e.target.classList.contains('remove-from-cart-btn')) {
-                    const productId = parseInt(e.target.getAttribute('data-product-id'));
-                    removeFromCart(productId);
-                }
-                // Update quantity buttons
-                if (e.target.classList.contains('update-quantity-btn')) {
-                    const productId = parseInt(e.target.getAttribute('data-product-id'));
-                    const action = e.target.getAttribute('data-action');
-                    const item = cartItems.find(i => i.id === productId);
-                    if (item) {
-                        const newQuantity = action === 'increment' ? item.quantity + 1 : item.quantity - 1;
-                        updateQuantity(productId, newQuantity);
-                    }
-                }
-            });
-        }
-
-        // Initial render based on login state
-        document.addEventListener('DOMContentLoaded', () => {
-            renderApp();
-        });
-    </script>
+    // === INIT ===
+    loadState();
+    renderApp();
+    document.addEventListener('DOMContentLoaded', ()=>{
+      const y = document.getElementById('year'); if (y) y.textContent = new Date().getFullYear();
+    });
+  </script>
 </body>
 </html>
