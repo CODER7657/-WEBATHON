@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Webathon
 
 We are on a streak of building 2 websites every day!
@@ -25,7 +26,7 @@ Browse each folder by date or project name to view the websites!
 Feel free to fork, clone, or star the repo to follow our web development streak. Connect or contribute as you like!
 
 ---
-
+=======
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
@@ -95,3 +96,4 @@ export default tseslint.config([
   },
 ])
 ```
+>>>>>>> 27e5fff (Initial commit)

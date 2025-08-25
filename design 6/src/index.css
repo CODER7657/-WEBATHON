@@ -1,0 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-space-dark text-white font-sans overflow-x-hidden;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, and Opera */
+}
+/* At the bottom of src/index.css */
+
+.minimap-pip.active {
+  border-color: #00F6FF; /* Neon Cyan Border */
+  box-shadow: 0 0 10px #00F6FF, 0 0 20px #00F6FF;
+  transform: scale(1.1);
+}
+
+.minimap-pip.active span,
+.minimap-pip:hover span {
+  opacity: 1;
+}
+
+.minimap-pip:hover {
+    transform: scale(1.1);
+}
